@@ -1,13 +1,11 @@
-<h2>Eventos</h2>
-<hr>
+<app-titulo [titulo]="'Eventos'"></app-titulo>
 <div class="form-inline">
   <div class="form-group mb-2">
     <label class="mr-2">Filtro: </label>
     <input type="text" class="form-control mr-2" placeholder="Filtrar tema ou local" [(ngModel)]="filtroLista">
   </div>
 </div>
-<!-- <h3>Filtro {{filtroLista}}</h3> -->
-<table class="table table-striped text-center">
+<table class="table table-striped">
   <thead class="thead-dark">
     <tr>
       <th>
