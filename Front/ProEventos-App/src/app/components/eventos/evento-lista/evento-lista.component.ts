@@ -1,3 +1,4 @@
+import { environment } from './../../../../environments/environment.prod';
 import { createContentChild } from '@angular/compiler/src/core';
 import { Component, OnInit, TemplateRef } from '@angular/core';
 import { Router } from '@angular/router';
@@ -59,6 +60,10 @@ export class EventoListaComponent implements OnInit {
   public alterarImagem(): void
   {
     this.exibirImagem = !this.exibirImagem;
+  }
+
+  public mostraImagem(imagemURL: string): string {
+    return (imagemURL != '') ? `${environment.apiURL}resources/images/${imagemURL}` : 'assets/img/semImagem.png';
   }
 
   public CarregarEventos(): void {

@@ -1,3 +1,4 @@
+import { environment } from './../../../../environments/environment';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { LoteService } from './../../../services/lote.service';
 import { AbstractControl } from '@angular/forms';
@@ -25,6 +26,8 @@ export class EventoDetalheComponent implements OnInit {
   form!: FormGroup;
   estadoSalvar: string = 'post';
   loteAtual = {id: 0, nome: '', indice: 0};
+  imagemURL: string = 'assets/img/upload.png';
+  file: File;
 
   get modoEditar(): boolean {
     return this.estadoSalvar == 'put';
@@ -70,10 +73,32 @@ export class EventoDetalheComponent implements OnInit {
     this.localeService.use('pt-br')
   }
 
+  public onFileChange(ev: any): void {
+    const reader = new FileReader();
+    reader.onload = (event: any) => this.imagemURL = event.target.result;
+    this.file = ev.target.files;
+    reader.readAsDataURL(this.file[0]);
+    this.uploadImagem();
+  }
+
+  uploadImagem(): void {
+    this.spinner.show();
+    this.eventoService.postUpload(this.eventoId, this.file).subscribe(
+      () => {
+        this.carregarEvento();
+        this.toaster.success('Imagem atualizada com sucesso!', 'Sucesso');
+      },
+      (error: any) => {
+        this.toaster.error('Erro ao fazer o upload da imagem!', 'Erro');
+        console.error(error);
+      }
+    ).add(() => this.spinner.hide());
+  }
+
   public carregarEvento(): void {
     this.eventoId = +this.activatedRoute.snapshot.paramMap.get('id');
 
-    if(this.eventoId != null || this.eventoId == 0){
+    if(this.eventoId != null && this.eventoId != 0) {
       this.spinner.show();
 
       this.estadoSalvar = 'put';
@@ -84,6 +109,9 @@ export class EventoDetalheComponent implements OnInit {
           this.evento = { ... evento};
           this.form.patchValue(this.evento);
           //this.carregarLotes(); outra forma de carregar os lotes na tela
+          if (this.evento.imagemURL != '') {
+            this.imagemURL = environment.apiURL + 'Resources/Images/' + this.evento.imagemURL;
+          }
           this.evento.lotes.forEach(lote => {
             this.lotes.push(this.criarLote(lote));
           });
@@ -97,6 +125,7 @@ export class EventoDetalheComponent implements OnInit {
   }
 
   public carregarLotes(): void {
+    this.spinner.show();
     this.loteService.getLotesByEventoId(this.eventoId).subscribe(
       (lotesRetorno: Lote[]) => {
         lotesRetorno.forEach(lote => {
@@ -123,7 +152,7 @@ export class EventoDetalheComponent implements OnInit {
       qtdPessoas: ['', [Validators.required, Validators.max(120000)]],
       telefone: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      imagemURL: ['', Validators.required],
+      imagemURL: [''],
       lotes: this.fb.array([])
     });
   }
