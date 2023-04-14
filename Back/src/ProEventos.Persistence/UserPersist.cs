@@ -16,6 +16,7 @@ namespace ProEventos.Persistence
         public UserPersist(ProEventosContext context) : base(context)
         {
             _context = context;    
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
         }
 
         public async Task<User> GetUserByIdAsync(int id)

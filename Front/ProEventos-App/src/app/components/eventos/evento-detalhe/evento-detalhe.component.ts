@@ -202,7 +202,7 @@ export class EventoDetalheComponent implements OnInit {
         (error: any) => {
           console.error(error);
           this.spinner.hide();
-          this.toaster.success('Erro ao salvar o evento!', 'Erro');
+          this.toaster.error('Erro ao salvar o evento!', 'Erro: ' + error);
         },
         () => this.spinner.hide()
       );
